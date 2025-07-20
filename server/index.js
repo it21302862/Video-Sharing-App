@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
 import videoRoutes from "./routes/video.route.js";
 import commentRoutes from "./routes/comment.route.js";
+import cors from "cors";
 
 const app = express();
 dotenv.config();
@@ -30,6 +31,7 @@ const connectDB = async () => {
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors());
 
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
