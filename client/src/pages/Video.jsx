@@ -119,51 +119,39 @@ const VideoFrame = styled.video`
 const Video = () => {
   const { currentUser } = useSelector((state) => state.user);
   const { currentVideo } = useSelector((state) => state.video);
-
   const dispatch = useDispatch();
 
-  // const path = useLocation().pathname.split("/")[2];
-  const location = useLocation();
-  const path = location.pathname.split("/")[2] || "";
+  const path = useLocation().pathname.split("/")[2];
 
   const [channel, setChannel] = useState({});
 
   useEffect(() => {
-    try {
-      const fetchData = async () => {
-        try {
-          const videoRes = await axios.get(
-            `http://localhost:8000/api/video/find/${path}`
-          );
-          const channelRes = await axios.get(
-            `http://localhost:8000/api/user/find/${videoRes.data.userId}`
-          );
-          setChannel(channelRes.data);
-          dispatch(fetchSuccess(videoRes.data));
-          console.log(videoRes.data);
-        } catch (err) {}
-      };
-      fetchData();
-    } catch (error) {
-      console.error("Error fetching video data:", error);
-    }
+    const fetchData = async () => {
+      try {
+        const videoRes = await axios.get(`/videos/find/${path}`);
+        const channelRes = await axios.get(
+          `/users/find/${videoRes.data.userId}`
+        );
+        setChannel(channelRes.data);
+        dispatch(fetchSuccess(videoRes.data));
+      } catch (err) {}
+    };
+    fetchData();
   }, [path, dispatch]);
 
   const handleLike = async () => {
-    await axios.put(`http://localhost:8000/api/user/like/${currentVideo._id}`);
+    await axios.put(`/users/like/${currentVideo._id}`);
     dispatch(like(currentUser._id));
   };
   const handleDislike = async () => {
-    await axios.put(
-      `http://localhost:8000/api/user/dislike/${currentVideo._id}`
-    );
+    await axios.put(`/users/dislike/${currentVideo._id}`);
     dispatch(dislike(currentUser._id));
   };
 
   const handleSub = async () => {
     currentUser.subscribedUsers.includes(channel._id)
-      ? await axios.put(`http://localhost:8000/api/video/unsub/${channel._id}`)
-      : await axios.put(`http://localhost:8000/api/video/sub/${channel._id}`);
+      ? await axios.put(`/users/unsub/${channel._id}`)
+      : await axios.put(`/users/sub/${channel._id}`);
     dispatch(subscription(channel._id));
   };
 

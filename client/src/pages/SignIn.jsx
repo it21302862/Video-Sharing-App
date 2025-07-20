@@ -7,7 +7,6 @@ import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { async } from "@firebase/util";
 import { useNavigate } from "react-router-dom";
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -81,7 +80,7 @@ const SignIn = () => {
     e.preventDefault();
     dispatch(loginStart());
     try {
-      const res = await axios.post("http://localhost:8000/api/auth/signin", { name, password });
+      const res = await axios.post("/auth/signin", { name, password });
       dispatch(loginSuccess(res.data));
       navigate("/")
     } catch (err) {
@@ -94,7 +93,7 @@ const SignIn = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         axios
-          .post("localhost:8000/api/auth/google", {
+          .post("/auth/google", {
             name: result.user.displayName,
             email: result.user.email,
             img: result.user.photoURL,
@@ -129,7 +128,7 @@ const SignIn = () => {
         />
         <Button onClick={handleLogin}>Sign in</Button>
         <Title>or</Title>
-        {/* <Button onClick={signInWithGoogle}>Signin with Google</Button> */}
+        <Button onClick={signInWithGoogle}>Signin with Google</Button>
         <Title>or</Title>
         <Input
           placeholder="username"

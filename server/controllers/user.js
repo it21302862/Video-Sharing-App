@@ -1,28 +1,23 @@
-import User from "../models/User.js";
 import { createError } from "../error.js";
+import User from "../models/User.js";
 import Video from "../models/Video.js";
 
-export const updateUser = async (req, res, next) => {
-  const userId = req.params.id;
-  const userData = req.body;
-
-  if (userId === req.user.id) {
+export const update = async (req, res, next) => {
+  if (req.params.id === req.user.id) {
     try {
       const updatedUser = await User.findByIdAndUpdate(
         req.params.id,
         {
-          $set: userData,
+          $set: req.body,
         },
         { new: true }
       );
-      res
-        .status(200)
-        .json({ message: "User updated successfully", data: updatedUser });
-    } catch (error) {
-      next(error);
+      res.status(200).json(updatedUser);
+    } catch (err) {
+      next(err);
     }
   } else {
-    return next(createError(403, "You can only update your own account!"));
+    return next(createError(403, "You can update only your account!"));
   }
 };
 
@@ -40,7 +35,7 @@ export const deleteUser = async (req, res, next) => {
 };
 
 export const getUser = async (req, res, next) => {
-   try {
+  try {
     const user = await User.findById(req.params.id);
     res.status(200).json(user);
   } catch (err) {
@@ -48,7 +43,7 @@ export const getUser = async (req, res, next) => {
   }
 };
 
-export const subscribeUser = async (req, res, next) => {
+export const subscribe = async (req, res, next) => {
   try {
     await User.findByIdAndUpdate(req.user.id, {
       $push: { subscribedUsers: req.params.id },
@@ -62,8 +57,8 @@ export const subscribeUser = async (req, res, next) => {
   }
 };
 
-export const unsubscribeUser = async (req, res, next) => {
-   try {
+export const unsubscribe = async (req, res, next) => {
+  try {
     try {
       await User.findByIdAndUpdate(req.user.id, {
         $pull: { subscribedUsers: req.params.id },
@@ -95,7 +90,7 @@ export const like = async (req, res, next) => {
 };
 
 export const dislike = async (req, res, next) => {
-   const id = req.user.id;
+    const id = req.user.id;
     const videoId = req.params.videoId;
     try {
       await Video.findByIdAndUpdate(videoId,{
